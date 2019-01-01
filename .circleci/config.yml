@@ -13,4 +13,4 @@ jobs:
       - checkout
       - run:
           name: Test
-          command: deno src/index.test.ts
+          command: deno index.test.ts

@@ -9,7 +9,7 @@ A colorful `assertEqual` for deno.
 ### Usage
 
 ``` typescript
-import { assertEqual } from 'https://denopkg.com/bokuweb/deno-pretty-assert@0.1.0/src/index.ts';
+import { assertEqual } from 'https://denopkg.com/bokuweb/deno-pretty-assert@0.1.1/index.ts';
 
 test({
   name: 'example',

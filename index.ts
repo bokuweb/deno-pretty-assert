@@ -4,7 +4,7 @@ import { test, equal } from 'https://deno.land/x/testing/testing.ts';
 import { color } from 'https://deno.land/x/colors/main.ts';
 // tslint:disable-next-line
 import diff, { DiffType } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.6/lib/index.ts';
-import prettyFormat from '../pretty-format/dist/index.js';
+import prettyFormat from './pretty-format/dist/index.js';
 
 const CAN_NOT_DISPLAY = '[Cannot display]';
 
