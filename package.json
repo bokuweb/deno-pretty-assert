@@ -1,0 +1,18 @@
+{
+  "name": "deno-pretty-assert",
+  "version": "0.1.0",
+  "main": "index.js",
+  "repository": "https://github.com/bokuweb/deno-pretty-assert.git",
+  "author": "bokuweb",
+  "license": "MIT",
+  "dependencies": {
+    "prettier": "^1.14.3",
+    "tslint": "^5.12.0",
+    "tslint-config-google": "^1.0.1",
+    "tslint-config-prettier": "^1.17.0",
+    "tslint-plugin-prettier": "^2.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^3.2.2"
+  }
+}

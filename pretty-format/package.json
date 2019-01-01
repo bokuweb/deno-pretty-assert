@@ -1,0 +1,20 @@
+{
+  "name": "pretty-format",
+  "version": "23.6.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build:bundle": "rollup -c",
+    "build:ts-fix": "terser dist/index.js -c -o dist/index.js -b \"beautify=false,preamble='//@ts-ignore'\"",
+    "build": "yarn build:bundle && yarn build:ts-fix",
+    "test": "yarn lint && deno index.test.js"
+  },
+  "devDependencies": {
+    "pretty-format": "^23.6.0",
+    "rollup": "^1.0.0",
+    "rollup-plugin-alias": "^1.5.1",
+    "rollup-plugin-commonjs": "^9.2.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "terser": "^3.13.1"
+  }
+}
