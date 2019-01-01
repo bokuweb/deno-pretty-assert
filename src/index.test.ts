@@ -1,6 +1,6 @@
 import { test } from 'https://deno.land/x/testing/testing.ts';
 // @ts-ignore
-import { assertEqual } from './index.ts';
+import { assertEqual } from 'https://denopkg.com/bokuweb/deno-pretty-assert/src/index.ts';
 
 test({
   name: 'passCases',
