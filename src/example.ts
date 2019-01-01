@@ -1,6 +1,6 @@
 import { test } from 'https://deno.land/x/testing/testing.ts';
 // @ts-ignore
-import { assertEqual } from 'https://denopkg.com/bokuweb/deno-pretty-assert/src/index.ts';
+import { assertEqual } from 'https://denopkg.com/bokuweb/deno-pretty-assert@0.1.0/src/index.ts';
 
 test({
   name: 'failCaseObject',
