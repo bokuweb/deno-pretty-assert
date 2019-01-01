@@ -1,5 +1,8 @@
+// tslint:disable-next-line
 import { test, equal } from 'https://deno.land/x/testing/testing.ts';
+// tslint:disable-next-line
 import { color } from 'https://deno.land/x/colors/main.ts';
+// tslint:disable-next-line
 import diff, { DiffType } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.6/lib/index.ts';
 import prettyFormat from '../pretty-format/dist/index.js';
 
@@ -36,7 +39,10 @@ function createSign(diffType: DiffType) {
 }
 
 export function assertEqual(actual: unknown, expected: unknown, msg?: string, out?: (log: string) => void) {
-  if (equal(actual, expected)) return;
+  if (equal(actual, expected)) {
+    return;
+  }
+  // tslint:disable-next-line
   const log = out || console.log;
   const actualString = createStr(actual);
   const expectedString = createStr(expected);
@@ -46,8 +52,8 @@ export function assertEqual(actual: unknown, expected: unknown, msg?: string, ou
     log(`    [Diff] ${color.bgGreenBright.white.bold('Added')} / ${color.bgRedBright.white.bold('Removed')}`);
     log('');
     diffResult.forEach(result => {
-      const color = createColor(result.type);
-      log(color(`${createSign(result.type)}${result.value}`));
+      const _color = createColor(result.type);
+      log(_color(`${createSign(result.type)}${result.value}`));
     });
     log('');
   } catch (e) {

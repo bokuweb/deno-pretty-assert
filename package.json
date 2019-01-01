@@ -5,6 +5,11 @@
   "repository": "https://github.com/bokuweb/deno-pretty-assert.git",
   "author": "bokuweb",
   "license": "MIT",
+  "scripts": {
+    "test": "deno src/index.test.ts",
+    "tsc": "tsc -p tsconfig.json",
+    "lint": "tslint \"src/index.ts\""
+  },
   "dependencies": {
     "prettier": "^1.14.3",
     "tslint": "^5.12.0",
