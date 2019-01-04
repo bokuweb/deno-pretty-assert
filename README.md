@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/bokuweb/deno-pretty-assert.svg?style=svg)](https://circleci.com/gh/bokuweb/deno-pretty-assert)
 
-A colorful `assertEqual` for deno.
+A colorful `assertEqual` for Deno.
 
 ### Screenshot
 
