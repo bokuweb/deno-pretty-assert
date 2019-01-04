@@ -1,14 +1,14 @@
 {
   "name": "deno-pretty-assert",
   "version": "0.1.1",
-  "main": "index.ts",
+  "main": "mod.ts",
   "repository": "https://github.com/bokuweb/deno-pretty-assert.git",
   "author": "bokuweb",
   "license": "MIT",
   "scripts": {
     "test": "deno src/index.test.ts",
     "tsc": "tsc -p tsconfig.json",
-    "lint": "tslint \"src/index.ts\""
+    "lint": "tslint \"src/mod.ts\""
   },
   "devDependencies": {
     "prettier": "^1.14.3",
