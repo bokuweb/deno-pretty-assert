@@ -1,5 +1,5 @@
 // tslint:disable-next-line
-import { test, equal } from 'https://deno.land/x/testing/testing.ts';
+import { test, equal } from 'https://deno.land/x/testing/mod.ts';
 // tslint:disable-next-line
 import { color } from 'https://deno.land/x/colors/main.ts';
 // tslint:disable-next-line
