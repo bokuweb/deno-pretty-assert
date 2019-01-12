@@ -1,7 +1,7 @@
 // tslint:disable-next-line
 import { test, equal } from 'https://deno.land/x/testing/mod.ts';
 // tslint:disable-next-line
-import { color } from 'https://deno.land/x/colors/main.ts';
+import { color } from 'https://deno.land/x/std/colors/mod.ts';
 // tslint:disable-next-line
 import diff, { DiffType } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.6/lib/index.ts';
 import prettyFormat from './pretty-format/dist/index.js';
