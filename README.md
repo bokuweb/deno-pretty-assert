@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/bokuweb/deno-pretty-assert.svg?style=svg)](https://circleci.com/gh/bokuweb/deno-pretty-assert)
 
-A colorful `assertEqual` for deno.
+A colorful `assertEqual` for Deno.
 
 ### Screenshot
 
@@ -11,7 +11,7 @@ A colorful `assertEqual` for deno.
 ### Usage
 
 ``` typescript
-import { assertEqual } from 'https://deno.land/x/pretty_assert@0.1.3/mod.ts';
+import { assertEqual } from 'https://deno.land/x/pretty_assert@0.1.4/mod.ts';
 
 test({
   name: 'example',
