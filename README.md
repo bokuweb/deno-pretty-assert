@@ -11,7 +11,7 @@ A colorful `assertEqual` for Deno.
 ### Usage
 
 ``` typescript
-import { assertEqual } from 'https://deno.land/x/pretty_assert@0.1.4/mod.ts';
+import { assertEqual } from 'https://deno.land/x/pretty_assert@0.1.5/mod.ts';
 
 test({
   name: 'example',
