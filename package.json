@@ -6,16 +6,17 @@
   "author": "bokuweb",
   "license": "MIT",
   "scripts": {
-    "test": "deno src/index.test.ts",
+    "test": "deno index.test.ts",
     "tsc": "tsc -p tsconfig.json",
     "lint": "tslint \"src/mod.ts\""
   },
   "devDependencies": {
+    "deno_ls_plugin": "^0.1.0",
     "prettier": "^1.14.3",
     "tslint": "^5.12.0",
-    "typescript": "^3.2.2",
     "tslint-config-google": "^1.0.1",
     "tslint-config-prettier": "^1.17.0",
-    "tslint-plugin-prettier": "^2.0.1"
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.3.1"
   }
 }

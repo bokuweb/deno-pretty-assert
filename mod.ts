@@ -1,8 +1,5 @@
-// tslint:disable-next-line
-import { test, equal } from 'https://deno.land/x/testing/mod.ts';
-// tslint:disable-next-line
-import { color } from 'https://deno.land/x/std/colors/mod.ts';
-// tslint:disable-next-line
+import { equal } from 'https://deno.land/x/testing/mod.ts';
+import { red, green, white, bold } from 'https://deno.land/x/std/colors/mod.ts';
 import diff, { DiffType } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.6/lib/index.ts';
 import prettyFormat from './pretty-format/dist/index.js';
 
@@ -12,18 +9,18 @@ function createStr(v: unknown): string {
   try {
     return prettyFormat(v);
   } catch (e) {
-    return color.redBright(CAN_NOT_DISPLAY);
+    return red(CAN_NOT_DISPLAY);
   }
 }
 
 function createColor(diffType: DiffType) {
   switch (diffType) {
     case 'added':
-      return color.greenBright;
+      return green;
     case 'removed':
-      return color.redBright;
+      return red;
     default:
-      return color.white;
+      return white;
   }
 }
 
@@ -49,7 +46,7 @@ export function assertEqual(actual: unknown, expected: unknown, msg?: string, ou
   try {
     const diffResult = diff(actualString.split('\n'), expectedString.split('\n'));
     log('');
-    log(`    [Diff] ${color.bgGreenBright.white.bold('Added')} / ${color.bgRedBright.white.bold('Removed')}`);
+    log(`    ${bold('[Diff]')} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
     log('');
     diffResult.forEach(result => {
       const _color = createColor(result.type);
@@ -58,7 +55,7 @@ export function assertEqual(actual: unknown, expected: unknown, msg?: string, ou
     log('');
   } catch (e) {
     log('');
-    log(color.redBright(CAN_NOT_DISPLAY));
+    log(red(CAN_NOT_DISPLAY));
     log('');
   }
   throw new Error(msg && 'assertEqual failed.');
