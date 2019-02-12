@@ -52,7 +52,7 @@ export function assertEqual(actual: unknown, expected: unknown, msg?: string) {
     console.log(`    ${gray(bold('[Diff]'))} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
     showEmptyLine();
     showEmptyLine();
-    diffResult.forEach((result: DiffResult) => {
+    diffResult.forEach((result: DiffResult<string>) => {
       const c = createColor(result.type);
       console.log(c(`${createSign(result.type)}${result.value}\n`));
     });
