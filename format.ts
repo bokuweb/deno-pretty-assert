@@ -25,6 +25,12 @@ const DEFAULT_OPTIONS: Options = {
   printFunctionName: true,
 };
 
+interface BasicValueOptions {
+  printFunctionName: boolean;
+  escapeRegex: boolean;
+  escapeString: boolean;
+}
+
 /**
  * Explicitly comparing typeof constructor to function avoids undefined as name
  * when mock identity-obj-proxy returns the key as the value for any key.
@@ -78,12 +84,7 @@ function printError(val: Error): string {
  * The first port of call for printing an object, handles most of the
  * data-types in JS.
  */
-function printBasicValue(
-  val: any,
-  printFunctionName: boolean,
-  escapeRegex: boolean,
-  escapeString: boolean,
-): string | null {
+function printBasicValue(val: any, { printFunctionName, escapeRegex, escapeString }: BasicValueOptions): string | null {
   if (val === true || val === false) {
     return '' + val;
   }
@@ -215,7 +216,7 @@ function printer(
   refs: Refs,
   hasCalledToJSON?: boolean,
 ): string {
-  const basicResult = printBasicValue(val, config.printFunctionName, config.escapeRegex, config.escapeString);
+  const basicResult = printBasicValue(val, config);
   if (basicResult !== null) {
     return basicResult;
   }
@@ -224,7 +225,7 @@ function printer(
 
 const getConfig = (options: Options): Config => ({
   ...options,
-  indent: options.min ? '' : createIndent(options.indent !== undefined ? options.indent : DEFAULT_OPTIONS.indent),
+  indent: options.min ? '' : createIndent(options.indent),
   spacingInner: options.min ? ' ' : '\n',
   spacingOuter: options.min ? '' : '\n',
 });
@@ -239,17 +240,14 @@ function createIndent(indent: number): string {
  * @param options Custom settings
  */
 export function format(val: any, options?: Optional<Options>): string {
-  const opts = Object.keys(options).reduce(
-    (acc, k: keyof Options) => {
-      const opt = options[k];
-      if (opt === undefined) {
-        return { ...acc, [k]: DEFAULT_OPTIONS[k] };
-      }
-      acc = { ...acc, [k]: opt };
-    },
-    {} as Options,
-  );
-  const basicResult = printBasicValue(val, opts.printFunctionName, opts.escapeRegex, opts.escapeString);
+  const opts = Object.keys(options).reduce((acc: Options, k: keyof Options) => {
+    const opt = options[k];
+    if (opt === undefined) {
+      return { ...acc, [k]: DEFAULT_OPTIONS[k] };
+    }
+    acc = { ...acc, [k]: opt };
+  }, {}) as Options;
+  const basicResult = printBasicValue(val, opts);
   if (basicResult !== null) {
     return basicResult;
   }
