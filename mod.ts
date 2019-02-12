@@ -1,7 +1,7 @@
 import { equal } from 'https://deno.land/x/testing/mod.ts';
 import { red, green, white, bold } from 'https://deno.land/x/std/colors/mod.ts';
-import diff, { DiffType } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.6/lib/index.ts';
-import prettyFormat from './pretty-format/dist/index.js';
+import diff, { DiffType } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.7/lib/index.ts';
+import prettyFormat from './format.ts';
 
 const CAN_NOT_DISPLAY = '[Cannot display]';
 
@@ -35,28 +35,33 @@ function createSign(diffType: DiffType) {
   }
 }
 
-export function assertEqual(actual: unknown, expected: unknown, msg?: string, out?: (log: string) => void) {
+export function assertEqual(actual: unknown, expected: unknown, msg?: string) {
   if (equal(actual, expected)) {
     return;
   }
-  // tslint:disable-next-line
-  const log = out || console.log;
   const actualString = createStr(actual);
   const expectedString = createStr(expected);
   try {
     const diffResult = diff(actualString.split('\n'), expectedString.split('\n'));
-    log('');
-    log(`    ${bold('[Diff]')} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
-    log('');
+    console.log('\n');
+    console.log('\n');
+    console.log(`    ${bold('[Diff]')} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
+    console.log('\n');
+    console.log('\n');
     diffResult.forEach(result => {
       const _color = createColor(result.type);
-      log(_color(`${createSign(result.type)}${result.value}`));
+      console.log(_color(`${createSign(result.type)}${result.value}\n`));
     });
-    log('');
+    console.log('\n');
   } catch (e) {
-    log('');
-    log(red(CAN_NOT_DISPLAY));
-    log('');
+    console.log('\n');
+    console.log(red(CAN_NOT_DISPLAY) + '\n');
+    console.log('\n');
   }
-  throw new Error(msg && 'assertEqual failed.');
+  if (!msg) {
+    msg = `actual: ${actualString} expected: ${expectedString}`;
+  }
+  throw new Error(msg);
 }
+
+export const a = 1;
