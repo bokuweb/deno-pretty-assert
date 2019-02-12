@@ -1,21 +1,29 @@
-// import style from 'ansi-styles';
-import { Colors, Config, Options, OptionsReceived, NewPlugin, Plugin, Plugins, Refs, Theme } from './types.ts';
-
+// This file is ported from pretty-format@24.0.0
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+import { Config, Options, Refs, Optional } from './types.ts';
 import { printIteratorEntries, printIteratorValues, printListItems, printObjectProperties } from './collections.ts';
-
-// import AsymmetricMatcher from './plugins/AsymmetricMatcher';
-// import ConvertAnsi from './plugins/ConvertAnsi';
-// import DOMCollection from './plugins/DOMCollection';
-// import DOMElement from './plugins/DOMElement';
-// import Immutable from './plugins/Immutable';
-// import ReactElement from './plugins/ReactElement';
-// import ReactTestComponent from './plugins/ReactTestComponent';
 
 const toString = Object.prototype.toString;
 const toISOString = Date.prototype.toISOString;
 const errorToString = Error.prototype.toString;
 const regExpToString = RegExp.prototype.toString;
 const symbolToString = Symbol.prototype.toString;
+
+const DEFAULT_OPTIONS: Options = {
+  callToJSON: true,
+  escapeRegex: false,
+  escapeString: true,
+  indent: 2,
+  maxDepth: Infinity,
+  min: false,
+  printFunctionName: true,
+};
 
 /**
  * Explicitly comparing typeof constructor to function avoids undefined as name
@@ -29,15 +37,6 @@ const getConstructorName = (val: new (...args: any[]) => any) =>
 const isWindow = (val: any) => typeof window !== 'undefined' && val === window;
 
 const SYMBOL_REGEXP = /^Symbol\((.*)\)(.*)$/;
-const NEWLINE_REGEXP = /\n/gi;
-
-class PrettyFormatPluginError extends Error {
-  constructor(message: string, stack: string) {
-    super(message);
-    this.stack = stack;
-    this.name = this.constructor.name;
-  }
-}
 
 function isToStringedArrayType(toStringed: string): boolean {
   return (
@@ -167,9 +166,9 @@ function printComplexValue(
   refs.push(val);
 
   const hitMaxDepth = ++depth > config.maxDepth;
-  const min = config.min;
+  const { min, callToJSON } = config;
 
-  if (config.callToJSON && !hitMaxDepth && val.toJSON && typeof val.toJSON === 'function' && !hasCalledToJSON) {
+  if (callToJSON && !hitMaxDepth && val.toJSON && typeof val.toJSON === 'function' && !hasCalledToJSON) {
     return printer(val.toJSON(), config, indentation, depth, refs, true);
   }
 
@@ -208,52 +207,6 @@ function printComplexValue(
         '}';
 }
 
-function isNewPlugin(plugin: Plugin): plugin is NewPlugin {
-  return (plugin as NewPlugin).serialize != null;
-}
-
-function printPlugin(plugin: Plugin, val: any, config: Config, indentation: string, depth: number, refs: Refs): string {
-  let printed;
-
-  try {
-    printed = isNewPlugin(plugin)
-      ? plugin.serialize(val, config, indentation, depth, refs, printer)
-      : plugin.print(
-          val,
-          valChild => printer(valChild, config, indentation, depth, refs),
-          str => {
-            const indentationNext = indentation + config.indent;
-            return indentationNext + str.replace(NEWLINE_REGEXP, '\n' + indentationNext);
-          },
-          {
-            edgeSpacing: config.spacingOuter,
-            min: config.min,
-            spacing: config.spacingInner,
-          },
-          config.colors,
-        );
-  } catch (error) {
-    throw new PrettyFormatPluginError(error.message, error.stack);
-  }
-  if (typeof printed !== 'string') {
-    throw new Error(`pretty-format: Plugin must return type "string" but instead returned "${typeof printed}".`);
-  }
-  return printed;
-}
-
-// function findPlugin(plugins: Plugins, val: any) {
-//   for (let p = 0; p < plugins.length; p++) {
-//     try {
-//       if (plugins[p].test(val)) {
-//         return plugins[p];
-//       }
-//     } catch (error) {
-//       throw new PrettyFormatPluginError(error.message, error.stack);
-//     }
-//   }
-//   return null;
-// }
-
 function printer(
   val: any,
   config: Config,
@@ -262,113 +215,18 @@ function printer(
   refs: Refs,
   hasCalledToJSON?: boolean,
 ): string {
-  // const plugin = findPlugin(config.plugins, val);
-  // if (plugin !== null) {
-  //   return printPlugin(plugin, val, config, indentation, depth, refs);
-  // }
-
   const basicResult = printBasicValue(val, config.printFunctionName, config.escapeRegex, config.escapeString);
   if (basicResult !== null) {
     return basicResult;
   }
-
   return printComplexValue(val, config, indentation, depth, refs, hasCalledToJSON);
 }
 
-const DEFAULT_THEME: Theme = {
-  comment: 'gray',
-  content: 'reset',
-  prop: 'yellow',
-  tag: 'cyan',
-  value: 'green',
-};
-
-const DEFAULT_THEME_KEYS = Object.keys(DEFAULT_THEME);
-
-const DEFAULT_OPTIONS: Options = {
-  callToJSON: true,
-  escapeRegex: false,
-  escapeString: true,
-  highlight: false,
-  indent: 2,
-  maxDepth: Infinity,
-  min: false,
-  plugins: [],
-  printFunctionName: true,
-  theme: DEFAULT_THEME,
-};
-
-function validateOptions(options: OptionsReceived) {
-  Object.keys(options).forEach(key => {
-    if (!DEFAULT_OPTIONS.hasOwnProperty(key)) {
-      throw new Error(`pretty-format: Unknown option "${key}".`);
-    }
-  });
-
-  if (options.min && options.indent !== undefined && options.indent !== 0) {
-    throw new Error('pretty-format: Options "min" and "indent" cannot be used together.');
-  }
-
-  if (options.theme !== undefined) {
-    if (options.theme === null) {
-      throw new Error(`pretty-format: Option "theme" must not be null.`);
-    }
-
-    if (typeof options.theme !== 'object') {
-      throw new Error(
-        `pretty-format: Option "theme" must be of type "object" but instead received "${typeof options.theme}".`,
-      );
-    }
-  }
-}
-
-// const getColorsHighlight = (options: OptionsReceived): Colors =>
-//   DEFAULT_THEME_KEYS.reduce((colors, key) => {
-//     const value =
-//       options.theme && (options.theme as any)[key] !== undefined
-//         ? (options.theme as any)[key]
-//         : (DEFAULT_THEME as any)[key];
-//     const color = (style as any)[value];
-//     if (color && typeof color.close === 'string' && typeof color.open === 'string') {
-//       colors[key] = color;
-//     } else {
-//       throw new Error(
-//         `pretty-format: Option "theme" has a key "${key}" whose value "${value}" is undefined in ansi-styles.`,
-//       );
-//     }
-//     return colors;
-//   }, Object.create(null));
-
-const getColorsEmpty = (): Colors =>
-  DEFAULT_THEME_KEYS.reduce((colors, key) => {
-    colors[key] = { close: '', open: '' };
-    return colors;
-  }, Object.create(null));
-
-const getPrintFunctionName = (options?: OptionsReceived) =>
-  options && options.printFunctionName !== undefined ? options.printFunctionName : DEFAULT_OPTIONS.printFunctionName;
-
-const getEscapeRegex = (options?: OptionsReceived) =>
-  options && options.escapeRegex !== undefined ? options.escapeRegex : DEFAULT_OPTIONS.escapeRegex;
-
-const getEscapeString = (options?: OptionsReceived) =>
-  options && options.escapeString !== undefined ? options.escapeString : DEFAULT_OPTIONS.escapeString;
-
-const getConfig = (options?: OptionsReceived): Config => ({
-  callToJSON: options && options.callToJSON !== undefined ? options.callToJSON : DEFAULT_OPTIONS.callToJSON,
-  colors: getColorsEmpty(),
-  escapeRegex: getEscapeRegex(options),
-  escapeString: getEscapeString(options),
-  indent:
-    options && options.min
-      ? ''
-      : createIndent(options && options.indent !== undefined ? options.indent : DEFAULT_OPTIONS.indent),
-  maxDepth: options && options.maxDepth !== undefined ? options.maxDepth : DEFAULT_OPTIONS.maxDepth,
-  min: options && options.min !== undefined ? options.min : DEFAULT_OPTIONS.min,
-  plugins: options && options.plugins !== undefined ? options.plugins : DEFAULT_OPTIONS.plugins,
-  printFunctionName: getPrintFunctionName(options),
-  spacingInner: options && options.min ? ' ' : '\n',
-  spacingOuter: options && options.min ? '' : '\n',
+const getConfig = (options: Options): Config => ({
+  ...options,
+  indent: options.min ? '' : createIndent(options.indent !== undefined ? options.indent : DEFAULT_OPTIONS.indent),
+  spacingInner: options.min ? ' ' : '\n',
+  spacingOuter: options.min ? '' : '\n',
 });
 
 function createIndent(indent: number): string {
@@ -380,38 +238,12 @@ function createIndent(indent: number): string {
  * @param val any potential JavaScript object
  * @param options Custom settings
  */
-function prettyFormat(val: any, options?: OptionsReceived): string {
-  if (options) {
-    validateOptions(options);
-    // if (options.plugins) {
-    //   const plugin = findPlugin(options.plugins, val);
-    //   if (plugin !== null) {
-    //     return printPlugin(plugin, val, getConfig(options), '', 0, []);
-    //   }
-    // }
-  }
-
-  const basicResult = printBasicValue(
-    val,
-    getPrintFunctionName(options),
-    getEscapeRegex(options),
-    getEscapeString(options),
-  );
+export function format(val: any, options?: Optional<Options>): string {
+  options = { ...DEFAULT_OPTIONS, ...options };
+  const basicResult = printBasicValue(val, options.printFunctionName, options.escapeRegex, options.escapeString);
   if (basicResult !== null) {
     return basicResult;
   }
 
   return printComplexValue(val, getConfig(options), '', 0, []);
 }
-
-prettyFormat.plugins = {
-  // AsymmetricMatcher,
-  // ConvertAnsi,
-  // DOMCollection,
-  // DOMElement,
-  // Immutable,
-  // ReactElement,
-  // ReactTestComponent,
-};
-
-export default prettyFormat;

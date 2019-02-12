@@ -6,7 +6,7 @@ import { assertEqual } from './mod.ts';
 test({
   name: 'passCases',
   fn() {
-    assertEqual({ a: 10 }, { a: 1 });
+    assertEqual({ a: 10 }, { a: 10 });
   },
 });
 

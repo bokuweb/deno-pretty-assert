@@ -1,3 +1,4 @@
+// This file is ported from pretty-format@24.0.0
 /**
  * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
  *
@@ -5,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-
 import { Config, Printer, Refs } from './types.ts';
 
 const getKeysOfEnumerableProperties = (object: {}) => {
@@ -28,9 +28,6 @@ const getKeysOfEnumerableProperties = (object: {}) => {
  * without surrounding punctuation (for example, braces)
  */
 export function printIteratorEntries(
-  // Flow 0.51.0: property `@@iterator` of $Iterator not found in Object
-  // To allow simplistic getRecordIterator in immutable.js
-  // replaced Iterator<[any, any]> with any
   iterator: any,
   config: Config,
   indentation: string,
@@ -114,7 +111,7 @@ export function printIteratorValues(
  * Return items (for example, of an array)
  * with spacing, indentation, and comma
  * without surrounding punctuation (for example, brackets)
- **/
+ */
 export function printListItems(
   list: any,
   config: Config,
@@ -152,7 +149,7 @@ export function printListItems(
  * without surrounding punctuation (for example, braces)
  */
 export function printObjectProperties(
-  val: Object,
+  val: {},
   config: Config,
   indentation: string,
   depth: number,
@@ -170,7 +167,7 @@ export function printObjectProperties(
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const name = printer(key, config, indentationNext, depth, refs);
-      const value = printer((val as any)[key], config, indentationNext, depth, refs);
+      const value = printer(val[key as keyof typeof val], config, indentationNext, depth, refs);
 
       result += indentationNext + name + ': ' + value;
 

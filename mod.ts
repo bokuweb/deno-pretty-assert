@@ -1,13 +1,13 @@
 import { equal } from 'https://deno.land/x/testing/mod.ts';
-import { red, green, white, bold } from 'https://deno.land/x/std/colors/mod.ts';
-import diff, { DiffType } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.7/lib/index.ts';
-import prettyFormat from './format.ts';
+import { red, green, white, gray, bold } from 'https://deno.land/x/std/colors/mod.ts';
+import diff, { DiffType, DiffResult } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.7/lib/index.ts';
+import { format } from './format.ts';
 
 const CAN_NOT_DISPLAY = '[Cannot display]';
 
 function createStr(v: unknown): string {
   try {
-    return prettyFormat(v);
+    return format(v);
   } catch (e) {
     return red(CAN_NOT_DISPLAY);
   }
@@ -45,12 +45,12 @@ export function assertEqual(actual: unknown, expected: unknown, msg?: string) {
     const diffResult = diff(actualString.split('\n'), expectedString.split('\n'));
     console.log('\n');
     console.log('\n');
-    console.log(`    ${bold('[Diff]')} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
+    console.log(`    ${gray(bold('[Diff]'))} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
     console.log('\n');
     console.log('\n');
-    diffResult.forEach(result => {
-      const _color = createColor(result.type);
-      console.log(_color(`${createSign(result.type)}${result.value}\n`));
+    diffResult.forEach((result: DiffResult) => {
+      const c = createColor(result.type);
+      console.log(c(`${createSign(result.type)}${result.value}\n`));
     });
     console.log('\n');
   } catch (e) {
@@ -63,5 +63,3 @@ export function assertEqual(actual: unknown, expected: unknown, msg?: string) {
   }
   throw new Error(msg);
 }
-
-export const a = 1;
