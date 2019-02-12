@@ -24,6 +24,10 @@ function createColor(diffType: DiffType) {
   }
 }
 
+function showEmptyLine() {
+  console.log('\n');
+}
+
 function createSign(diffType: DiffType) {
   switch (diffType) {
     case 'added':
@@ -43,20 +47,20 @@ export function assertEqual(actual: unknown, expected: unknown, msg?: string) {
   const expectedString = createStr(expected);
   try {
     const diffResult = diff(actualString.split('\n'), expectedString.split('\n'));
-    console.log('\n');
-    console.log('\n');
+    showEmptyLine();
+    showEmptyLine();
     console.log(`    ${gray(bold('[Diff]'))} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
-    console.log('\n');
-    console.log('\n');
+    showEmptyLine();
+    showEmptyLine();
     diffResult.forEach((result: DiffResult) => {
       const c = createColor(result.type);
       console.log(c(`${createSign(result.type)}${result.value}\n`));
     });
-    console.log('\n');
+    showEmptyLine();
   } catch (e) {
-    console.log('\n');
+    showEmptyLine();
     console.log(red(CAN_NOT_DISPLAY) + '\n');
-    console.log('\n');
+    showEmptyLine();
   }
   if (!msg) {
     msg = `actual: ${actualString} expected: ${expectedString}`;
