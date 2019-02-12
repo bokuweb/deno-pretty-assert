@@ -239,13 +239,13 @@ function createIndent(indent: number): string {
  * @param val any potential JavaScript object
  * @param options Custom settings
  */
-export function format(val: any, options?: Optional<Options>): string {
-  const opts = Object.keys(options).reduce((acc: Options, k: keyof Options) => {
+export function format(val: any, options: Optional<Options> = {}): string {
+  const opts = Object.keys(DEFAULT_OPTIONS).reduce((acc: Options, k: keyof Options) => {
     const opt = options[k];
-    if (opt === undefined) {
+    if (typeof opt === 'undefined') {
       return { ...acc, [k]: DEFAULT_OPTIONS[k] };
     }
-    acc = { ...acc, [k]: opt };
+    return { ...acc, [k]: opt };
   }, {}) as Options;
   const basicResult = printBasicValue(val, opts);
   if (basicResult !== null) {
