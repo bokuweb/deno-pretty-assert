@@ -239,11 +239,20 @@ function createIndent(indent: number): string {
  * @param options Custom settings
  */
 export function format(val: any, options?: Optional<Options>): string {
-  options = { ...DEFAULT_OPTIONS, ...options };
-  const basicResult = printBasicValue(val, options.printFunctionName, options.escapeRegex, options.escapeString);
+  const opts = Object.keys(options).reduce(
+    (acc, k: keyof Options) => {
+      const opt = options[k];
+      if (opt === undefined) {
+        return { ...acc, [k]: DEFAULT_OPTIONS[k] };
+      }
+      acc = { ...acc, [k]: opt };
+    },
+    {} as Options,
+  );
+  const basicResult = printBasicValue(val, opts.printFunctionName, opts.escapeRegex, opts.escapeString);
   if (basicResult !== null) {
     return basicResult;
   }
 
-  return printComplexValue(val, getConfig(options), '', 0, []);
+  return printComplexValue(val, getConfig(opts), '', 0, []);
 }
