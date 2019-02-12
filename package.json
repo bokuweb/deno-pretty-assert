@@ -6,7 +6,7 @@
   "author": "bokuweb",
   "license": "MIT",
   "scripts": {
-    "test": "deno index.test.ts",
+    "test": "deno test.ts",
     "tsc": "tsc -p tsconfig.json",
     "lint": "tslint \"src/mod.ts\""
   },
