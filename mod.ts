@@ -1,13 +1,13 @@
 import { equal } from 'https://deno.land/x/testing/mod.ts';
-import { red, green, white, bold } from 'https://deno.land/x/std/colors/mod.ts';
-import diff, { DiffType } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.6/lib/index.ts';
-import prettyFormat from './pretty-format/dist/index.js';
+import { red, green, white, gray, bold } from 'https://deno.land/x/std/colors/mod.ts';
+import diff, { DiffType, DiffResult } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.7/lib/index.ts';
+import { format } from './format.ts';
 
 const CAN_NOT_DISPLAY = '[Cannot display]';
 
 function createStr(v: unknown): string {
   try {
-    return prettyFormat(v);
+    return format(v);
   } catch (e) {
     return red(CAN_NOT_DISPLAY);
   }
@@ -24,6 +24,10 @@ function createColor(diffType: DiffType) {
   }
 }
 
+function showEmptyLine() {
+  console.log('\n');
+}
+
 function createSign(diffType: DiffType) {
   switch (diffType) {
     case 'added':
@@ -35,28 +39,31 @@ function createSign(diffType: DiffType) {
   }
 }
 
-export function assertEqual(actual: unknown, expected: unknown, msg?: string, out?: (log: string) => void) {
+export function assertEqual(actual: unknown, expected: unknown, msg?: string) {
   if (equal(actual, expected)) {
     return;
   }
-  // tslint:disable-next-line
-  const log = out || console.log;
   const actualString = createStr(actual);
   const expectedString = createStr(expected);
   try {
     const diffResult = diff(actualString.split('\n'), expectedString.split('\n'));
-    log('');
-    log(`    ${bold('[Diff]')} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
-    log('');
-    diffResult.forEach(result => {
-      const _color = createColor(result.type);
-      log(_color(`${createSign(result.type)}${result.value}`));
+    showEmptyLine();
+    showEmptyLine();
+    console.log(`    ${gray(bold('[Diff]'))} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
+    showEmptyLine();
+    showEmptyLine();
+    diffResult.forEach((result: DiffResult<string>) => {
+      const c = createColor(result.type);
+      console.log(c(`${createSign(result.type)}${result.value}\n`));
     });
-    log('');
+    showEmptyLine();
   } catch (e) {
-    log('');
-    log(red(CAN_NOT_DISPLAY));
-    log('');
+    showEmptyLine();
+    console.log(red(CAN_NOT_DISPLAY) + '\n');
+    showEmptyLine();
   }
-  throw new Error(msg && 'assertEqual failed.');
+  if (!msg) {
+    msg = `actual: ${actualString} expected: ${expectedString}`;
+  }
+  throw new Error(msg);
 }
