@@ -1,5 +1,5 @@
 import { equal } from 'https://deno.land/x/testing/mod.ts';
-import { red, green, white, gray, bold } from 'https://deno.land/x/std/colors/mod.ts';
+import { red, green, white, gray, bold, bgBlue } from 'https://deno.land/x/std/colors/mod.ts';
 import diff, { DiffType, DiffResult } from 'https://denopkg.com/bokuweb/wu-diff-js@0.1.7/lib/index.ts';
 import { format } from './format.ts';
 
@@ -16,16 +16,12 @@ function createStr(v: unknown): string {
 function createColor(diffType: DiffType) {
   switch (diffType) {
     case 'added':
-      return green;
+      return (s: string) => green(bold(s));
     case 'removed':
-      return red;
+      return (s: string) => red(bold(s));
     default:
       return white;
   }
-}
-
-function showEmptyLine() {
-  console.log('\n');
 }
 
 function createSign(diffType: DiffType) {
@@ -39,31 +35,34 @@ function createSign(diffType: DiffType) {
   }
 }
 
-export function assertEqual(actual: unknown, expected: unknown, msg?: string) {
+function buildMessage(diffResult: ReadonlyArray<DiffResult<string>>) {
+  const messages = [];
+  messages.push('');
+  messages.push('');
+  messages.push(`    ${gray(bold('[Diff]'))} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
+  messages.push('');
+  messages.push('');
+  diffResult.forEach((result: DiffResult<string>) => {
+    const c = createColor(result.type);
+    messages.push(c(`${createSign(result.type)}${result.value}`));
+  });
+  messages.push('');
+
+  return messages;
+}
+
+export function assertEqual(actual: unknown, expected: unknown) {
   if (equal(actual, expected)) {
     return;
   }
+  let message = '';
   const actualString = createStr(actual);
   const expectedString = createStr(expected);
   try {
     const diffResult = diff(actualString.split('\n'), expectedString.split('\n'));
-    showEmptyLine();
-    showEmptyLine();
-    console.log(`    ${gray(bold('[Diff]'))} ${green(bold('Added'))} / ${red(bold('Removed'))}`);
-    showEmptyLine();
-    showEmptyLine();
-    diffResult.forEach((result: DiffResult<string>) => {
-      const c = createColor(result.type);
-      console.log(c(`${createSign(result.type)}${result.value}\n`));
-    });
-    showEmptyLine();
+    message = buildMessage(diffResult).join('\n');
   } catch (e) {
-    showEmptyLine();
-    console.log(red(CAN_NOT_DISPLAY) + '\n');
-    showEmptyLine();
+    message = `\n${red(CAN_NOT_DISPLAY)} + \n\n`;
   }
-  if (!msg) {
-    msg = `actual: ${actualString} expected: ${expectedString}`;
-  }
-  throw new Error(msg);
+  throw new Error(message);
 }
