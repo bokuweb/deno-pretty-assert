@@ -1,3 +1,5 @@
+## This package has already moved to https://github.com/denoland/deno_std/tree/master/testing.
+
 # deno-pretty-assert
 
 [![CircleCI](https://circleci.com/gh/bokuweb/deno-pretty-assert.svg?style=svg)](https://circleci.com/gh/bokuweb/deno-pretty-assert)
